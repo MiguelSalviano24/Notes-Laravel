@@ -54,10 +54,11 @@ class AuthController extends Controller
                 'username' => $user->username
             ]
         ]);
-        echo 'Login com sucesso';
+        return redirect()->to('/');
     }
     public function logout()
     {
-        echo "logout";
+        session()->forget('user');
+        return redirect()->to('/login');
     }
 }
