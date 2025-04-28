@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PDOException;
@@ -32,16 +33,29 @@ class AuthController extends Controller
         );
 
         $username = $request->input('text_username');
-        $username = $request->input('text_password');
+        $password = $request->input('text_password');
 
-        try {
-            DB::connection()->getPdo();
-            echo 'conectou';
-        } catch (\PDOException $e) {
-            echo 'nao conectou' . $e->getMessage();
+        $user = User::where('username', $username)->where('deleted_at', NULL)->first();
+
+        if (!$user) {
+            return redirect()->back()->withInput()->with('loginError', 'Usuário ou senha inválidos');
         }
-    }
 
+        if (!password_verify($password, $user->password)) {
+            return redirect()->back()->withInput()->with('loginError', 'Usuário ou senha inválidos');
+        }
+
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->save();
+
+        session([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username
+            ]
+        ]);
+        echo 'Login com sucesso';
+    }
     public function logout()
     {
         echo "logout";
