@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\Operations;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class MainController extends Controller
 {
@@ -17,6 +20,23 @@ class MainController extends Controller
 
     public function newNote()
     {
-        echo "Estou criando uma nova nota";
+        return view('new_note');
+    }
+
+    public function newNoteSubmit(Request $request)
+    {
+        echo 'estou criando uma nova nota';
+    }
+
+    public function editNote($id)
+    {
+        $id = Operations::decryptId($id);
+        echo "estou editando a nota de id $id";
+    }
+
+    public function deleteNote($id)
+    {
+        $id = Operations::decryptId($id);
+        echo "estou deletando a nota de id $id";
     }
 }
